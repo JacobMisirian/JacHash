@@ -14,6 +14,33 @@ namespace JacHash
 
         public string Generate()
         {
+            int[] letters = GetLetters();
+            decimal resultNum = mainHashing(letters);
+
+
+            resultNum = preformPadding(resultNum);
+            return resultNum.ToString();
+        }
+
+        private decimal mainHashing(int[] letters)
+        {
+            decimal resultNum = 1;
+            for (int x = 0; x < letters.Length; x++)
+            {
+                if (resultNum > 11264337593543950335)
+                {
+                    resultNum = Convert.ToDecimal(Convert.ToString(resultNum).Substring(0, Convert.ToString(resultNum).Length / 2));
+                }
+                else
+                {
+                    resultNum *= Convert.ToDecimal(Convert.ToString(letters[x], 2));
+                }
+            }
+
+            return resultNum;
+        }
+        private int[] GetLetters()
+        {
             string ASCII = "";
             foreach (char c in text)
             {
@@ -26,21 +53,8 @@ namespace JacHash
                 letters[x] = Convert.ToInt32(tempLetters[x]);
             }
 
-            decimal resultNum = 1;
-            for (int x = 0; x < letters.Length; x++)
-            {
-                if (resultNum > 264337593543950335)
-                {
-                    resultNum = Convert.ToDecimal(Convert.ToString(resultNum).Substring(0, Convert.ToString(resultNum).Length / 2));
-                }
-                else
-                {
-                    resultNum *= Convert.ToDecimal(Convert.ToString(letters[x], 2));
-                }
-            }
+            return letters;
 
-            resultNum = preformPadding(resultNum);
-            return resultNum.ToString();
         }
 
         public decimal preformPadding(decimal binary)
@@ -51,7 +65,7 @@ namespace JacHash
             {
                 for (int x = 0; result.Length < 20; x++)
                 {
-                    result += result[x];
+                    result += result[x] + ((result[x + 1] + 1) * 2);
                 }
             }
             if (result.Length > 20)
