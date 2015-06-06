@@ -14,7 +14,7 @@ namespace JacHash
 
         public string Generate()
         {
-            byte[] letters = GetLetters();
+            byte[] letters = Encoding.ASCII.GetBytes(text);
             string resultNum = mainHashing(letters).ToString();
 
 
@@ -38,23 +38,6 @@ namespace JacHash
             }
 
             return resultNum;
-        }
-        private byte[] GetLetters()
-        {
-            string ASCII = "";
-            foreach (char c in text)
-            {
-                ASCII += System.Convert.ToInt32(c).ToString() + " ";
-            }
-            string[] tempLetters = ASCII.Split(' ');
-            byte[] letters = new byte[tempLetters.Length - 1];
-            for (int x = 0; x < tempLetters.Length - 1; x++)
-            {
-                letters[x] = Convert.ToByte(tempLetters[x]);
-            }
-
-            return letters;
-
         }
 
         public string preformPadding(string binary)
