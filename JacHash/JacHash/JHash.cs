@@ -14,15 +14,15 @@ namespace JacHash
 
         public string Generate()
         {
-            int[] letters = GetLetters();
-            decimal resultNum = mainHashing(letters);
+            byte[] letters = GetLetters();
+            string resultNum = mainHashing(letters).ToString();
 
 
             resultNum = preformPadding(resultNum);
             return resultNum.ToString();
         }
 
-        private decimal mainHashing(int[] letters)
+        private decimal mainHashing(byte[] letters)
         {
             decimal resultNum = 1;
             for (int x = 0; x < letters.Length; x++)
@@ -39,7 +39,7 @@ namespace JacHash
 
             return resultNum;
         }
-        private int[] GetLetters()
+        private byte[] GetLetters()
         {
             string ASCII = "";
             foreach (char c in text)
@@ -47,33 +47,40 @@ namespace JacHash
                 ASCII += System.Convert.ToInt32(c).ToString() + " ";
             }
             string[] tempLetters = ASCII.Split(' ');
-            int[] letters = new int[tempLetters.Length - 1];
+            byte[] letters = new byte[tempLetters.Length - 1];
             for (int x = 0; x < tempLetters.Length - 1; x++)
             {
-                letters[x] = Convert.ToInt32(tempLetters[x]);
+                letters[x] = Convert.ToByte(tempLetters[x]);
             }
 
             return letters;
 
         }
 
-        public decimal preformPadding(decimal binary)
+        public string preformPadding(string binary)
         {
-            string result = binary.ToString();
+            string result = binary;
 
             if (result.Length < 20)
             {
                 for (int x = 0; result.Length < 20; x++)
                 {
-                    result += result[x] + ((result[x + 1] + 1) * 2);
+                    if (result.Length > x + 1)
+                    {
+                        result += result[x] + ((result[x + 1] + 1) * 2);
+                    }
+                    else
+                    {
+                        result += result[x];
+                    }
                 }
             }
             if (result.Length > 20)
             {
-                result = result.Substring(0, 19);
+                result = result.Substring(0, result.Length - 1);
             }
 
-            return Convert.ToDecimal(result);
+            return result.ToString();
         }
     }
 }
