@@ -25,6 +25,13 @@ namespace JacHash
 					byte[] file = File.ReadAllBytes(Console.ReadLine());
 					Console.WriteLine (new JHash(file).GenerateFromFile());
 				}
+				else if (input == "us")
+				{
+					Console.Write ("Enter a string: ");
+					string text = Console.ReadLine ();
+					Console.Write ("Enter a length in bytes: ");
+					Console.WriteLine(new JHash(text, Convert.ToInt32(Console.ReadLine())).GenerateFromString());
+				}
 				else
 				{
 					Console.Write ("Enter a string: ");

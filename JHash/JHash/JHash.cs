@@ -8,14 +8,17 @@ namespace JacHash
     {
         private string text = "";
         private byte[] file;
+		private int byteSize = 8;
 		
-		public JHash(string theString)
+		public JHash(string theString, int size = 8)
         {
+			byteSize = size;
             text = theString;
         }
 		
-		public JHash(byte[] theFile)
+		public JHash(byte[] theFile, int size = 8)
 		{
+			byteSize = size;
 			file = theFile;
 		}
 		
@@ -44,16 +47,16 @@ namespace JacHash
 
         private byte[] mainHashing(byte[] letters)
         {
-			byte[] result = new byte[8]{0x6A, 0x61, 0x63, 0x6F, 0x62, 0x67, 0x67, 0x67};
+			byte[] result = new byte[byteSize];
 			byte[] input = pad(letters);
 			
 			for (int x = 0; x < result.Length; x++)
 			{
-				result[x % 8] = (byte)(result[x % 8] << 1);
-				result[x % 8] ^= input[(x * 2) % 8];
-				result[x % 8] = (byte)(result[x % 8] >> 1);
-				result[x % 8] ^= input[(Convert.ToInt32(Math.Sqrt(x))) % 8];
-				result[x % 8] = (byte)(result[x % 8] << 1);
+				result[x % byteSize] = (byte)(result[x % byteSize] << 1);
+				result[x % byteSize] ^= input[(x * 2) % byteSize];
+				result[x % byteSize] = (byte)(result[x % byteSize] >> 1);
+				result[x % byteSize] ^= input[(Convert.ToInt32(Math.Sqrt(x))) % byteSize];
+				result[x % byteSize] = (byte)(result[x % byteSize] << 1);
 			}
 			
 			return result;
@@ -61,13 +64,13 @@ namespace JacHash
 		
 		private byte[] pad(byte[] entered)
 		{
-			if (entered.Length >= 8)
+			if (entered.Length >= byteSize)
 			{
 				return entered;
 			}
-			byte[] result = new byte[8];
+			byte[] result = new byte[byteSize];
 			Array.Copy(entered, result, entered.Length);
-			for (int x = entered.Length; x < 8; x++)
+			for (int x = entered.Length; x < byteSize; x++)
 			{
 				result[x] = 1;
 			}
@@ -75,4 +78,3 @@ namespace JacHash
 		}
 	}
 }
-

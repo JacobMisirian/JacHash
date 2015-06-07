@@ -1,15 +1,13 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="JHash/MyClass.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="JHash/JHash.cs">
     <Files>
-      <File FileName="JHash/MyClass.cs" Line="79" Column="1" />
+      <File FileName="JHash/JHash.cs" Line="50" Column="32" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="JHash" expanded="True">
-            <Node name="MyClass.cs" selected="True" />
-          </Node>
+          <Node name="JHash" expanded="True" selected="True" />
         </State>
       </Pad>
       <Pad Id="ClassPad">

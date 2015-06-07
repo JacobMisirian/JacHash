@@ -33,7 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="JHash">
-      <HintPath>..\..\..\JHash\JHash\JHash\bin\Release\JHash.dll</HintPath>
+      <HintPath>..\..\JHash\JHash\bin\Release\JHash.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
