@@ -7,64 +7,72 @@ namespace JacHash
     public class JHash
     {
         private string text = "";
-        public JHash(string theString)
+        private byte[] file;
+		
+		public JHash(string theString)
         {
             text = theString;
         }
-
-        public string Generate()
+		
+		public JHash(byte[] theFile)
+		{
+			file = theFile;
+		}
+		
+        public string GenerateFromString()
         {
             byte[] letters = Encoding.ASCII.GetBytes(text);
-            string resultNum = mainHashing(letters).ToString();
-
-
-            resultNum = preformPadding(resultNum);
-            return resultNum.ToString();
+            byte[] hashed = mainHashing(letters);
+			return getHexString(hashed);
         }
+		
+		public string GenerateFromFile()
+		{
+			byte[] hashed = mainHashing(file);
+			return getHexString(hashed);
+		}
+	
 
-        private decimal mainHashing(byte[] letters)
+	    private string getHexString(byte[] bytes) {
+	       StringBuilder accum = new StringBuilder();
+	       for(int i = 0; i < bytes.Length; i++) {
+	          accum.AppendFormat("{0:x2}", bytes[i]);
+	       }
+	       return accum.ToString();
+	    }
+
+
+        private byte[] mainHashing(byte[] letters)
         {
-            decimal resultNum = 1;
-            for (int x = 0; x < letters.Length; x++)
-            {
-                if (resultNum > 11264337593543950335)
-                {
-                    resultNum = Convert.ToDecimal(Convert.ToString(resultNum).Substring(0, Convert.ToString(resultNum).Length / 2));
-                }
-                else
-                {
-                    resultNum *= Convert.ToDecimal(Convert.ToString(letters[x], 2));
-                }
-            }
-
-            return resultNum;
+			byte[] result = new byte[8]{0x6A, 0x61, 0x63, 0x6F, 0x62, 0x67, 0x67, 0x67};
+			byte[] input = pad(letters);
+			
+			for (int x = 0; x < result.Length; x++)
+			{
+				result[x % 8] = (byte)(result[x % 8] << 1);
+				result[x % 8] ^= input[(x * 2) % 8];
+				result[x % 8] = (byte)(result[x % 8] >> 1);
+				result[x % 8] ^= input[(Convert.ToInt32(Math.Sqrt(x))) % 8];
+				result[x % 8] = (byte)(result[x % 8] << 1);
+			}
+			
+			return result;
         }
-
-        public string preformPadding(string binary)
-        {
-            string result = binary;
-
-            if (result.Length < 20)
-            {
-                for (int x = 0; result.Length < 20; x++)
-                {
-                    if (result.Length > x + 1)
-                    {
-                        result += result[x] + ((result[x + 1] + 1) * 2);
-                    }
-                    else
-                    {
-                        result += result[x];
-                    }
-                }
-            }
-            if (result.Length > 20)
-            {
-                result = result.Substring(0, result.Length - 1);
-            }
-
-            return result.ToString();
-        }
-    }
+		
+		private byte[] pad(byte[] entered)
+		{
+			if (entered.Length >= 8)
+			{
+				return entered;
+			}
+			byte[] result = new byte[8];
+			Array.Copy(entered, result, entered.Length);
+			for (int x = entered.Length; x < 8; x++)
+			{
+				result[x] = 1;
+			}
+			return result;
+		}
+	}
 }
 
