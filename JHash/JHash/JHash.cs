@@ -9,7 +9,7 @@ namespace JacHash
         private string text = "";
         private byte[] file;
 		private int byteSize = 8;
-		
+
 		public JHash(string theString, int size = 8)
         {
 			byteSize = size;
@@ -49,21 +49,46 @@ namespace JacHash
         {
 			byte[] result = new byte[byteSize];
 			byte[] input = pad(letters);
-			
-			for (int x = 0; x < result.Length; x++)
-			{
-				result[x % byteSize] = (byte)(result[x % byteSize] << 1);
-				result[x % byteSize] ^= input[(x * 2) % byteSize];
-				result[x % byteSize] = (byte)(result[x % byteSize] >> 1);
-				result[x % byteSize] ^= input[(Convert.ToInt32(Math.Sqrt(x))) % byteSize];
-				result[x % byteSize] = (byte)(result[x % byteSize] << 1);
-			}
+
+            byte a = input[0];
+            byte b = input[1];
+            byte c = input[2];
+            byte d = input[3];
+            byte e = input[4];
+            byte f = input[5];
+            byte g = input[6];
+            byte h = input[7];
+
+            result[0] = (byte)((b & c) | (~b & d));
+            result[1] = (byte)((b ^ c) ^ d);
+            result[2] = (byte)((((b & c) | (b & d)) | (c & d)));
+            result[3] = (byte)(e ^ result[1]);
+            result[4] = (byte)((result[0] & f) ^ a);
+            result[5] = (byte)((h | b) | result[3]);
+            result[6] = (byte)((a & b) | (b & c));
+            result[7] = (byte)(result[6] | g);
+
+           /* for (int x = 0; x < result.Length; x++)
+            {
+                /*result[x % byteSize] = (byte)(result[x % byteSize] << 1);
+                result[x % byteSize] |= input[(x * 2) % byteSize];
+                result[x % byteSize] = (byte)(result[x % byteSize] >> 1);
+                result[x % byteSize] ^= input[(Convert.ToInt32(Math.Sqrt(x))) % byteSize];
+                result[x % byteSize] = (byte)(result[x % byteSize] >> 1);
+                if (x < result.Length - 1)
+                {
+                    result[x % byteSize] *= (byte)(input[(x + 1) % byteSize] % byteSize);
+                }
+
+
+            }*/
 			
 			return result;
         }
 		
 		private byte[] pad(byte[] entered)
 		{
+            int origLength = entered.Length;
 			if (entered.Length >= byteSize)
 			{
 				return entered;
@@ -72,7 +97,7 @@ namespace JacHash
 			Array.Copy(entered, result, entered.Length);
 			for (int x = entered.Length; x < byteSize; x++)
 			{
-				result[x] = 1;
+                result[x] = 0x1F;
 			}
 			return result;
 		}
