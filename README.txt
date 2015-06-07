@@ -4,7 +4,7 @@ In the main folder there is two subfolders, named
 JacHash and JHash. JacHash is a VS/mono project that
 uses the libary as an example of using JacHash. The
 other subfolder JHash is a VS/mono project which is
-the libary (compiles to DLL) itslef. The class JHash
+the libary (compiles to DLL) itself. The class JHash
 has 2 main methods, one to hash a string and one to
 hash a byte[] (designed for hashing a file). Once the
 DLL has been included, you can hash a string by doing
