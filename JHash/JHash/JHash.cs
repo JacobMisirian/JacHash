@@ -59,14 +59,15 @@ namespace JacHash
             byte g = input[6];
             byte h = input[7];
 
-            result[0] = (byte)((b & c) | (~b & d));
-            result[1] = (byte)((b ^ c) ^ d);
-            result[2] = (byte)((((b & c) | (b & d)) | (c & d)));
-            result[3] = (byte)(e ^ result[1]);
-            result[4] = (byte)((result[0] & f) ^ a);
-            result[5] = (byte)((h | b) | result[3]);
-            result[6] = (byte)((a & b) | (b & c));
-            result[7] = (byte)(result[6] | g);
+            result[0] = (byte)((a & b) | (~a & c));
+            result[1] = (byte)((a & c) | (b & ~c));
+            result[2] = (byte)(a ^ b ^ c); 
+            result[3] = (byte)(b ^ (a | ~c));
+            result[4] = (byte)((d & e) | (~d & f));
+            result[5] = (byte)((d & f) | (e & ~f));
+            result[6] = (byte)(d ^ e ^ f);
+            result[7] = (byte)(e ^ (h | ~g));
+
 
            /* for (int x = 0; x < result.Length; x++)
             {
