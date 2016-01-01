@@ -1,13 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State expanded="True" selected="True">
-          <Node name="JacHash" expanded="True" />
-        </State>
-      </Pad>
-    </Pads>
+  <MonoDevelop.Ide.Workbench ActiveDocument="JacHash/Program.cs">
+    <Files>
+      <File FileName="JacHash/Program.cs" Line="10" Column="32" />
+      <File FileName="JacHash/JacHash.cs" Line="34" Column="1" />
+    </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

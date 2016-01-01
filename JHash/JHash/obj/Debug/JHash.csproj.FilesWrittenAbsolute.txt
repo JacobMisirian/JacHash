@@ -1,5 +1,0 @@
-/home/jacob/JacHash/JHash/JHash/obj/Debug/.NETFramework,Version=v4.0.AssemblyAttribute.cs
-/home/jacob/JacHash/JHash/JHash/bin/Debug/JHash.dll.mdb
-/home/jacob/JacHash/JHash/JHash/bin/Debug/JHash.dll
-/home/jacob/JacHash/JHash/JHash/obj/Debug/JHash.dll
-/home/jacob/JacHash/JHash/JHash/obj/Debug/JHash.dll.mdb
