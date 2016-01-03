@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace JacHash
 {
@@ -27,6 +28,11 @@ namespace JacHash
                     case "--file":
                         config.JacHashMode = JacHashMode.File;
                         config.FilePath = expectData("[PATH]");
+                        if (!File.Exists(config.FilePath))
+                        {
+                            Console.WriteLine("Input file " + config.FilePath + " does not exist!");
+                            Environment.Exit(0);
+                        }
                         return config;
                     case "-h":
                     case "--help":
