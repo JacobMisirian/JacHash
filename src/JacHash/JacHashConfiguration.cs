@@ -10,14 +10,9 @@ namespace JacHash
 
     public class JacHashConfiguration
     {
-        public JacHashMode JacHashMode { get; private set; }
-        public string FilePath { get; private set; }
-
-        public JacHashConfiguration(JacHashMode jacHashMode, string filePath = "")
-        {
-            JacHashMode = jacHashMode;
-            FilePath = filePath;
-        }
+        public JacHashMode JacHashMode { get; set; }
+        public string FilePath { get; set; }
+        public string OutputPath { get; set; }
     }
 }
 

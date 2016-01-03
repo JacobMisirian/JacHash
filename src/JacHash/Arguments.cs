@@ -16,20 +16,30 @@ namespace JacHash
         {
             if (args.Length <= 0)
                 DisplayHelp();
+           
+            JacHashConfiguration config = new JacHashConfiguration();
+
             for (position = 0; position < args.Length; position++)
             {
-                switch (args[position])
+                switch (args[position].ToLower())
                 {
                     case "-f":
                     case "--file":
-                        return new JacHashConfiguration(JacHashMode.File, expectData("file path"));
+                        config.JacHashMode = JacHashMode.File;
+                        config.FilePath = expectData("[PATH]");
+                        return config;
                     case "-h":
                     case "--help":
                         DisplayHelp();
                         break;
+                    case "-o":
+                    case "--output":
+                        config.OutputPath = expectData("[PATH]");
+                        return config;
                     case "-r":
                     case "--repl":
-                        return new JacHashConfiguration(JacHashMode.Repl);
+                        config.JacHashMode = JacHashMode.Repl;
+                        return config;
                     default:
                         Console.WriteLine("Unknown option: " + args[position]);
                         Environment.Exit(0);
@@ -57,6 +67,7 @@ namespace JacHash
             Console.WriteLine("Options:");
             Console.WriteLine("-f --file [PATH]    Calculates the hash of a file.");
             Console.WriteLine("-h --help           Displays this help and exits.");
+            Console.WriteLine("-o --output [PATH]  Sets the output path for the result.");
             Console.WriteLine("-r --repl           Enters the REPL shell.");
             Environment.Exit(0);
         }
