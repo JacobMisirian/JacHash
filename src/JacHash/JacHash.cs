@@ -32,6 +32,11 @@ namespace JacHash
             this.MAX_LENGTH = MAX_LENGTH;
         }
 
+        public string Hash(string data)
+        {
+            return Hash(Encoding.ASCII.GetBytes(data));
+        }
+
         public string Hash(byte[] data)
         {
             data = pad(data);

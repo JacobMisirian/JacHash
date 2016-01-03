@@ -8,7 +8,6 @@ namespace JacHash
     class MainClass
     {
         static JacHash jacHash = new JacHash();
-        static Encoding encoding = Encoding.ASCII;
         static JacHashConfiguration config;
 
         public static void Main(string[] args)
@@ -38,7 +37,7 @@ namespace JacHash
 
         private static string hash(string text)
         {
-            return hash(encoding.GetBytes(text));
+            return hash(text);
         }
 
         private static string hash(byte[] data)
