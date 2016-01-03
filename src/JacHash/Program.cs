@@ -16,7 +16,7 @@ namespace JacHash
             switch (config.JacHashMode)
             {
                 case JacHashMode.File:
-                    processOutput(hash(File.ReadAllBytes(config.FilePath)));
+                    processOutput(jacHash.Hash(new StreamReader(config.FilePath).BaseStream));
                     break;
                 case JacHashMode.Repl:
                     while (true)
@@ -29,7 +29,7 @@ namespace JacHash
 
         private static void processOutput(string output)
         {
-            if (config.OutputPath == "")
+            if (config.OutputPath == "" || config.OutputPath == null)
                 Console.WriteLine(output);
             else
                 File.AppendAllText(config.OutputPath, output);
@@ -37,7 +37,7 @@ namespace JacHash
 
         private static string hash(string text)
         {
-            return hash(text);
+            return jacHash.Hash(text);
         }
 
         private static string hash(byte[] data)

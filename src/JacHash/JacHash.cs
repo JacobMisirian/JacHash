@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Text;
 
 namespace JacHash
@@ -43,6 +44,15 @@ namespace JacHash
             byte[] result = new byte[MAX_LENGTH];
             for (int i = 0; i < data.Length; i++)
                 result[i % MAX_LENGTH] = transformByte(data[i]);
+            return getHexString(result);
+        }
+
+        public string Hash(Stream fileStream)
+        {
+            BinaryReader reader = new BinaryReader(fileStream);
+            byte[] result = new byte[MAX_LENGTH];
+            while (reader.BaseStream.Position < reader.BaseStream.Length)
+                result[reader.BaseStream.Position % MAX_LENGTH] = transformByte(reader.ReadByte());
             return getHexString(result);
         }
 
