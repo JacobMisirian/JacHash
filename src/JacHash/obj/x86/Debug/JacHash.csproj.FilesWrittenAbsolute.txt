@@ -1,0 +1,5 @@
+/home/reagan/JacHash/src/JacHash/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/reagan/JacHash/src/JacHash/bin/Debug/JacHash.exe.mdb
+/home/reagan/JacHash/src/JacHash/bin/Debug/JacHash.exe
+/home/reagan/JacHash/src/JacHash/obj/x86/Debug/JacHash.exe
+/home/reagan/JacHash/src/JacHash/obj/x86/Debug/JacHash.exe.mdb

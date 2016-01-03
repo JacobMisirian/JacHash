@@ -17,7 +17,7 @@ namespace JacHash
             switch (config.JacHashMode)
             {
                 case JacHashMode.File:
-                    processOutput(hash(File.ReadAllText(config.FilePath)));
+                    processOutput(hash(File.ReadAllBytes(config.FilePath)));
                     break;
                 case JacHashMode.Repl:
                     while (true)
@@ -38,7 +38,12 @@ namespace JacHash
 
         private static string hash(string text)
         {
-            return jacHash.Hash(encoding.GetBytes(text));
+            return hash(encoding.GetBytes(text));
+        }
+
+        private static string hash(byte[] data)
+        {
+            return jacHash.Hash(data);
         }
     }
 }

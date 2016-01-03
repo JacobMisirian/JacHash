@@ -5,6 +5,11 @@ namespace JacHash
 {
     public class JacHash
     {
+        public uint A { get { return a; } set { a = value; } }
+        public uint B { get { return b; } set { b = value; } }
+        public uint C { get { return c; } set { c = value; } }
+        public uint D { get { return d; } set { d = value; } }
+
         private uint a = 0xBADA55;
         private uint b = 0x223344;
         private uint c = 0x152437;
@@ -15,6 +20,15 @@ namespace JacHash
 
         public JacHash(int MAX_LENGTH = 8)
         {
+            this.MAX_LENGTH = MAX_LENGTH;
+        }
+
+        public JacHash(uint a, uint b, uint c, uint d, int MAX_LENGTH = 8)
+        {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+            this.d = d;
             this.MAX_LENGTH = MAX_LENGTH;
         }
 
