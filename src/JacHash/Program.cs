@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace JacHash
@@ -9,10 +11,19 @@ namespace JacHash
         {
             JacHash jacHash = new JacHash();
             Encoding encoding = Encoding.ASCII;
-            while (true)
+            JacHashConfiguration config = new Arguments(args).Scan();
+
+            switch (config.JacHashMode)
             {
-                Console.Write("> ");
-                Console.WriteLine(jacHash.Hash(encoding.GetBytes(Console.ReadLine())));
+                case JacHashMode.File:
+                    Console.WriteLine(jacHash.Hash(encoding.GetBytes(File.ReadAllText(config.FilePath))));
+                    break;
+                case JacHashMode.Repl:
+                    while (true)
+                    {
+                        Console.Write("> ");
+                        Console.WriteLine(jacHash.Hash(encoding.GetBytes(Console.ReadLine())));
+                    }
             }
         }
     }
