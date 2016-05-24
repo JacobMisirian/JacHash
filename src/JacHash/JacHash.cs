@@ -20,11 +20,10 @@ namespace JacHash
 
         public string Hash(Stream stream)
         {
-            StreamReader reader = new StreamReader(stream);
-            byte[] bytes = new byte[reader.BaseStream.Length];
-            while (reader.BaseStream.Position < reader.BaseStream.Length)
-                bytes[reader.BaseStream.Position] = (byte)reader.Read();
-            return Hash(bytes);
+            BinaryReader reader = new BinaryReader(stream);
+            byte[] source = reader.ReadBytes((int)reader.BaseStream.Length);
+
+            return Hash(source);
         }
         public string Hash(string text)
         {
@@ -41,9 +40,7 @@ namespace JacHash
 
             byte[] result = new byte[MAX_LENGTH];
             foreach (byte b in source)
-            {
                 x += b;
-            }
 
             for (int i = 0; i < source.Length; i++)
                 result[i % MAX_LENGTH] = transformByte(source[i]);

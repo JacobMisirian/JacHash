@@ -7,7 +7,6 @@ namespace JacHash
 {
     class MainClass
     {
-        static JacHash jacHash = new JacHash();
         static JacHashConfiguration config;
 
         public static void Main(string[] args)
@@ -16,7 +15,7 @@ namespace JacHash
             switch (config.JacHashMode)
             {
                 case JacHashMode.File:
-                    processOutput(jacHash.Hash(new StreamReader(config.FilePath).BaseStream));
+                    processOutput(new JacHash().Hash(new StreamReader(config.FilePath).BaseStream));
                     break;
                 case JacHashMode.Repl:
                     while (true)
@@ -39,12 +38,12 @@ namespace JacHash
 
         private static string hash(string text)
         {
-            return jacHash.Hash(text);
+            return new JacHash().Hash(text);
         }
 
         private static string hash(byte[] data)
         {
-            return jacHash.Hash(data);
+            return new JacHash().Hash(data);
         }
     }
 }
