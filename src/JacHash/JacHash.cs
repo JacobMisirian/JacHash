@@ -6,88 +6,69 @@ namespace JacHash
 {
     public class JacHash
     {
-        public uint A { get { return a; } set { a = value; } }
-        public uint B { get { return b; } set { b = value; } }
-        public uint C { get { return c; } set { c = value; } }
-        public uint D { get { return d; } set { d = value; } }
+        public const int MAX_LENGTH = 10;
 
         private uint a = 0xBADA55;
-        private uint b = 0x223344;
-        private uint c = 0x152437;
-        private uint d = 0x525234;
-        private uint x;
+        private uint b = 0x1B1337;
+        private uint c = 0xFFFFAB;
+        private uint d = 0xBDFFFF;
+        private uint x = 0;
 
-        private int MAX_LENGTH;
-
-        public JacHash(int MAX_LENGTH = 8)
+        public JacHash()
         {
-            this.MAX_LENGTH = MAX_LENGTH;
         }
 
-        public JacHash(uint a, uint b, uint c, uint d, int MAX_LENGTH = 8)
+        public string Hash(string text)
         {
-            this.a = a;
-            this.b = b;
-            this.c = c;
-            this.d = d;
-            this.MAX_LENGTH = MAX_LENGTH;
+            byte[] source = new byte[text.Length];
+
+            for (int i = 0; i < source.Length; i++)
+                source[i] = (byte)text[i];
+            return Hash(source);
         }
 
-        public string Hash(string data)
+        public string Hash(byte[] source)
         {
-            return Hash(Encoding.ASCII.GetBytes(data));
-        }
+            source = pad(source);
 
-        public string Hash(byte[] data)
-        {
-            data = pad(data);
             byte[] result = new byte[MAX_LENGTH];
-            for (int i = 0; i < data.Length; i++)
-                result[i % MAX_LENGTH] = transformByte(data[i]);
+            foreach (byte b in source)
+            {
+                x += b;
+            }
+
+            for (int i = 0; i < source.Length; i++)
+                result[i % MAX_LENGTH] = transformByte(source[i]);
+
             return getHexString(result);
-        }
-
-        public string Hash(Stream fileStream)
-        {
-            BinaryReader reader = new BinaryReader(fileStream);
-            byte[] result = new byte[MAX_LENGTH];
-            while (reader.BaseStream.Position < reader.BaseStream.Length)
-                result[reader.BaseStream.Position % MAX_LENGTH] = transformByte(reader.ReadByte());
-            return getHexString(result);
-        }
-
-        private byte[] pad(byte[] bytes)
-        {
-            int origLength = bytes.Length;
-            if (bytes.Length >= MAX_LENGTH)
-                return bytes;
-            byte[] result = new byte[MAX_LENGTH];
-            Array.Copy(bytes, result, bytes.Length);
-            for (int j = bytes.Length; j < MAX_LENGTH; j++)
-                result[j] = 0x1F;
-            return result;
         }
 
         private byte transformByte(byte bl)
         {
-            a = shiftLeft(bl, (int)(a + x));
-            b = (a + bl);
-            c = (a + b) | x;
-            d ^= c;
-            x = a ^ ((b | c) & d);
-            a |= d;
-            /*  Console.WriteLine("a: " + (byte)a);
-            Console.WriteLine("b: " + (byte)b); 
-            Console.WriteLine("c: " + (byte)c);
-            Console.WriteLine("d: " + (byte)d);
-            Console.WriteLine("x: " + (byte)x);*/
-            bl = (byte)((a * c) + b - x * d + bl);
+            a = shiftLeft((uint)bl, x);
+            b = (b ^ bl) - x;
+            c = (a + b) & x;
+            d ^= x - b;
+            x ^= d;
+            bl = (byte)((a * c) + b - x * d ^ bl);
             return bl;
         }
 
-        private byte shiftLeft(byte b, int bits)
+        private byte[] pad(byte[] bytes)
         {
-            return (byte)((byte)(b << bits) | (byte)(b >> 32 - bits));
+            if (bytes.Length >= MAX_LENGTH)
+                return bytes;
+            byte[] ret = new byte[MAX_LENGTH];
+            for (int i = 0; i < bytes.Length; i++)
+                ret[i] = bytes[i];
+            for (int i = bytes.Length; i < ret.Length; i++)
+                ret[i] = 0xFF;
+            return ret;
+        }
+
+        private uint shiftLeft(uint b, uint bits)
+        {
+            return (uint)(((byte)b << (byte)bits) | ((byte)b >> 32 - (byte)bits));
         }
 
         private string getHexString(byte[] bytes)
