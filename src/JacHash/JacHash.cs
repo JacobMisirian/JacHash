@@ -6,18 +6,26 @@ namespace JacHash
 {
     public class JacHash
     {
-        public const int MAX_LENGTH = 10;
+        public const int MAX_LENGTH = 17;
 
-        private uint a = 0xBADA55;
-        private uint b = 0x1B1337;
-        private uint c = 0xFFFFAB;
-        private uint d = 0xBDFFFF;
+        private uint a = 0x6B87;
+        private uint b = 0x7F43;
+        private uint c = 0xA4AD;
+        private uint d = 0xDC3F;
         private uint x = 0;
 
         public JacHash()
         {
         }
 
+        public string Hash(Stream stream)
+        {
+            StreamReader reader = new StreamReader(stream);
+            byte[] bytes = new byte[reader.BaseStream.Length];
+            while (reader.BaseStream.Position < reader.BaseStream.Length)
+                bytes[reader.BaseStream.Position] = (byte)reader.Read();
+            return Hash(bytes);
+        }
         public string Hash(string text)
         {
             byte[] source = new byte[text.Length];

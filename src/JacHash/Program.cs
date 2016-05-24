@@ -16,7 +16,7 @@ namespace JacHash
             switch (config.JacHashMode)
             {
                 case JacHashMode.File:
-               //     processOutput(jacHash.Hash(new StreamReader(config.FilePath).BaseStream));
+                    processOutput(jacHash.Hash(new StreamReader(config.FilePath).BaseStream));
                     break;
                 case JacHashMode.Repl:
                     while (true)
