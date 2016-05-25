@@ -52,18 +52,20 @@ namespace JacHash
         {
             Initialize();
             BinaryReader reader = new BinaryReader(inputStream);
+
             int appendToStream = 0;
             if (reader.BaseStream.Length < MAX_LENGTH)
                 appendToStream = MAX_LENGTH - (int)reader.BaseStream.Length;
             byte[] result = new byte[MAX_LENGTH];
+
             while (reader.BaseStream.Position < reader.BaseStream.Length)
-                x += (byte)reader.Read();
+                x += reader.ReadBytes(1)[0];
+            
             reader.BaseStream.Position = 0;
             for (int i = 0; i < appendToStream; i++)
                 x += FILLER_BYTE;
-
             while (reader.BaseStream.Position < reader.BaseStream.Length)
-                result[reader.BaseStream.Position % MAX_LENGTH] = transformByte((byte)reader.Read());
+                result[reader.BaseStream.Position % MAX_LENGTH] = transformByte(reader.ReadBytes(1)[0]);
             for (int i = (int)reader.BaseStream.Length; i < ((int)reader.BaseStream.Length) + appendToStream; i++)
                 result[i % MAX_LENGTH] = transformByte(FILLER_BYTE);
             hash = result;
