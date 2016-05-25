@@ -41,7 +41,7 @@ namespace JacHash
         /// <param name="maxLength">Max length of result hash.</param>
         public JacHash(int maxLength)
         {
-            MAX_LENGTH = maxLength;
+            MAX_LENGTH = maxLength / 2;
         }
         /// <summary>
         /// Computes the hash.
