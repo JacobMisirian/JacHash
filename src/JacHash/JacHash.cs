@@ -16,17 +16,33 @@ namespace JacHash
         /// </summary>
         public const byte FILLER_BYTE = 0xFF;
         /// <summary>
+        /// A.
+        /// </summary>
+        public const uint A = 0x6B87;
+        /// <summary>
+        /// The b.
+        /// </summary>
+        public const uint B = 0x7F43;
+        /// <summary>
+        /// The c.
+        /// </summary>
+        public const uint C = 0xA4Ad;
+        /// <summary>
+        /// The d.
+        /// </summary>
+        public const uint D = 0xDC3F;
+        /// <summary>
         /// Gets a value indicating whether this instance hash.
         /// </summary>
         /// <value><c>true</c> if this instance hash; otherwise, <c>false</c>.</value>
         public new string Hash { get { return getHexString(hash); } }
         private byte[] hash;
 
-        // These are the initial register values.
-        private uint a = 0x6B87;
-        private uint b = 0x7F43;
-        private uint c = 0xA4AD;
-        private uint d = 0xDC3F;
+        // These are the registers that change after each byte.
+        private uint a;
+        private uint b;
+        private uint c;
+        private uint d;
 
         // This is a register that is dependent on all of the bytes. Responsible for avalanche effect.
         private uint x = 0;
@@ -53,19 +69,25 @@ namespace JacHash
             Initialize();
             BinaryReader reader = new BinaryReader(inputStream);
 
+            // Find if the stream contains less than MAX_LENGTH, how many bytes need to be appended.
             int appendToStream = 0;
             if (reader.BaseStream.Length < MAX_LENGTH)
                 appendToStream = MAX_LENGTH - (int)reader.BaseStream.Length;
-            byte[] result = new byte[MAX_LENGTH];
 
+            // Holds the result.
+            byte[] result = new byte[MAX_LENGTH];
+            // Read over the stream and set the initial value of x.
             while (reader.BaseStream.Position < reader.BaseStream.Length)
                 x += reader.ReadBytes(1)[0];
-            
-            reader.BaseStream.Position = 0;
+            // Also set the initial value with the amount of filler bytes.
             for (int i = 0; i < appendToStream; i++)
                 x += FILLER_BYTE;
+            // Reset the stream.
+            reader.BaseStream.Position = 0;
+            // Iterate over the stream and set the result.
             while (reader.BaseStream.Position < reader.BaseStream.Length)
                 result[reader.BaseStream.Position % MAX_LENGTH] = transformByte(reader.ReadBytes(1)[0]);
+            // Finish iterating over the filler bytes.
             for (int i = (int)reader.BaseStream.Length; i < ((int)reader.BaseStream.Length) + appendToStream; i++)
                 result[i % MAX_LENGTH] = transformByte(FILLER_BYTE);
             hash = result;
@@ -170,10 +192,10 @@ namespace JacHash
         /// </summary>
         public override void Initialize()
         {
-            a = 0x6B87;
-            b = 0x7F43;
-            c = 0xA4AD;
-            d = 0xDC3F;
+            a = A;
+            b = B;
+            c = C;
+            d = D;
             x = 0;
         }
 
@@ -222,4 +244,3 @@ namespace JacHash
         }
     }
 }
-
