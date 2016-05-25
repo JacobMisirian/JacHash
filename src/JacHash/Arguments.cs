@@ -38,6 +38,10 @@ namespace JacHash
                     case "--help":
                         DisplayHelp();
                         break;
+                    case "-l":
+                    case "--length":
+                        config.Length = Convert.ToInt32(expectData("[LENGTH]"));
+                        break;
                     case "-o":
                     case "--output":
                         config.OutputPath = expectData("[PATH]");
@@ -71,10 +75,11 @@ namespace JacHash
         {
             Console.WriteLine("Usage: JacHash.exe [OPTIONS] [ARGS]");
             Console.WriteLine("Options:");
-            Console.WriteLine("-f --file [PATH]    Calculates the hash of a file.");
-            Console.WriteLine("-h --help           Displays this help and exits.");
-            Console.WriteLine("-o --output [PATH]  Sets the output path for the result.");
-            Console.WriteLine("-r --repl           Enters the REPL shell.");
+            Console.WriteLine("-f --file [PATH]      Calculates the hash of a file.");
+            Console.WriteLine("-h --help             Displays this help and exits.");
+            Console.WriteLine("-l --length [LENGTH]  Sets the length of the hash from default 17.");
+            Console.WriteLine("-o --output [PATH]    Sets the output path for the result.");
+            Console.WriteLine("-r --repl             Enters the REPL shell.");
             Environment.Exit(0);
         }
     }

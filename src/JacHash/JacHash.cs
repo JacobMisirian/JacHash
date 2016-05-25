@@ -1,15 +1,26 @@
 using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace JacHash
 {
-    public class JacHash
+    public class JacHash : HashAlgorithm
     {
         /// <summary>
         /// The MAX LENGTH.
         /// </summary>
         public int MAX_LENGTH = 17;
+        /// <summary>
+        /// The FILLER_BYTE to pad the input.
+        /// </summary>
+        public const byte FILLER_BYTE = 0xFF;
+        /// <summary>
+        /// Gets a value indicating whether this instance hash.
+        /// </summary>
+        /// <value><c>true</c> if this instance hash; otherwise, <c>false</c>.</value>
+        public new string Hash { get { return getHexString(hash); } }
+        private byte[] hash;
 
         // These are the initial register values.
         private uint a = 0x6B87;
@@ -33,39 +44,45 @@ namespace JacHash
             MAX_LENGTH = maxLength;
         }
         /// <summary>
-        /// Creates a hash from a stream.
+        /// Computes the hash.
         /// </summary>
-        /// <returns>The hash from the stream.</returns>
-        /// <param name="stream">Stream.</param>
-        public string Hash(Stream stream)
+        /// <returns>The hash.</returns>
+        /// <param name="inputStream">Input stream.</param>
+        public new byte[] ComputeHash(Stream inputStream)
         {
-            BinaryReader reader = new BinaryReader(stream);
-            // Read the byte to send to the main Hash function.
-            byte[] source = reader.ReadBytes((int)reader.BaseStream.Length);
+            Initialize();
+            BinaryReader reader = new BinaryReader(inputStream);
+            int appendToStream = 0;
+            if (reader.BaseStream.Length < MAX_LENGTH)
+                appendToStream = MAX_LENGTH - (int)reader.BaseStream.Length;
+            byte[] result = new byte[MAX_LENGTH];
+            while (reader.BaseStream.Position < reader.BaseStream.Length)
+                x += (byte)reader.Read();
+            reader.BaseStream.Position = 0;
+            for (int i = 0; i < appendToStream; i++)
+                x += FILLER_BYTE;
 
-            return Hash(source);
+            while (reader.BaseStream.Position < reader.BaseStream.Length)
+                result[reader.BaseStream.Position % MAX_LENGTH] = transformByte((byte)reader.Read());
+            for (int i = (int)reader.BaseStream.Length; i < ((int)reader.BaseStream.Length) + appendToStream; i++)
+                result[i % MAX_LENGTH] = transformByte(FILLER_BYTE);
+            hash = result;
+            return result;
         }
         /// <summary>
-        /// Creates a hash from a string.
+        /// Computes the hash.
         /// </summary>
-        /// <returns>The hash from the string.</returns>
-        /// <param name="text">Text.</param>
-        public string Hash(string text)
+        /// <returns>The hash.</returns>
+        /// <param name="buffer">Buffer.</param>
+        /// <param name="offset">Offset.</param>
+        /// <param name="count">Count.</param>
+        public new byte[] ComputeHash(byte[] buffer, int offset, int count)
         {
-            byte[] source = new byte[text.Length];
-            // Create the byte[] to send the the main Hash function.
-            for (int i = 0; i < source.Length; i++)
-                source[i] = (byte)text[i];
-            return Hash(source);
-        }
-        /// <summary>
-        /// Creates a hash from a byte array.
-        /// </summary>
-        /// <returns>The hash from the byte array.</returns>
-        /// <param name="source">Source.</param>
-        public string Hash(byte[] source)
-        {
-            // If the source bytes are less than the minimum MAX_LENGTH, pad() will append 0xFF until it hits MAX_LENGTH.
+            Initialize();
+            byte[] source = new byte[count - offset];
+            for (int i = offset; i < count; i++)
+                source[i - offset] = buffer[i];
+            // If the source bytes are less than the minimum MAX_LENGTH, pad() will append FILLER_BYTE until it hits MAX_LENGTH.
             source = pad(source);
 
             // The resulting hash.
@@ -79,8 +96,83 @@ namespace JacHash
             for (int i = 0; i < source.Length; i++)
                 result[i % MAX_LENGTH] = transformByte(source[i]);
 
-            // Return the result formatted to a hex format.
-            return getHexString(result);
+            hash = result;
+            return result;
+        }
+        /// <summary>
+        /// Computes the hash string.
+        /// </summary>
+        /// <returns>The hash string.</returns>
+        /// <param name="hash">Hash.</param>
+        public string ComputeHashString(string hash)
+        {
+            ComputeHash(ASCIIEncoding.ASCII.GetBytes(hash));
+            return Hash;
+        }
+        /// <summary>
+        /// Computes the hash string.
+        /// </summary>
+        /// <returns>The hash string.</returns>
+        /// <param name="inputStream">Input stream.</param>
+        public string ComputeHashString(Stream inputStream)
+        {
+            ComputeHash(inputStream);
+            return Hash;
+        }
+        /// <summary>
+        /// Computes the hash string.
+        /// </summary>
+        /// <returns>The hash string.</returns>
+        /// <param name="buffer">Buffer.</param>
+        public string ComputeHashString(byte[] buffer)
+        {
+            ComputeHash(buffer);
+            return Hash;
+        }
+        /// <summary>
+        /// Computes the hash string.
+        /// </summary>
+        /// <returns>The hash string.</returns>
+        /// <param name="buffer">Buffer.</param>
+        /// <param name="offset">Offset.</param>
+        /// <param name="count">Count.</param>
+        public string ComputeHashString(byte[] buffer, int offset, int count)
+        {
+            ComputeHash(buffer, offset, count);
+            return Hash;
+        }
+        /// <summary>
+        /// Determines whether this instance hash core the specified array ibStart cbSize.
+        /// </summary>
+        /// <returns><c>true</c> if this instance hash core the specified array ibStart cbSize; otherwise, <c>false</c>.</returns>
+        /// <param name="array">Array.</param>
+        /// <param name="ibStart">Ib start.</param>
+        /// <param name="cbSize">Cb size.</param>
+        protected override void HashCore(byte[] array, int ibStart, int cbSize)
+        {
+            ComputeHash(array, ibStart, cbSize);
+        }
+        /// <summary>
+        /// Determines whether this instance hash final.
+        /// </summary>
+        /// <returns><c>true</c> if this instance hash final; otherwise, <c>false</c>.</returns>
+        protected override byte[] HashFinal()
+        {
+            return hash;
+        }
+        /// <Docs>A newly created instance doesn't have to be initialized.</Docs>
+        /// <attribution license="cc4" from="Microsoft" modified="false"></attribution>
+        /// <see cref="T:System.Security.Cryptography.HashAlgorithm"></see>
+        /// <summary>
+        /// Initialize this instance.
+        /// </summary>
+        public override void Initialize()
+        {
+            a = 0x6B87;
+            b = 0x7F43;
+            c = 0xA4AD;
+            d = 0xDC3F;
+            x = 0;
         }
 
         private byte transformByte(byte bl)
@@ -107,9 +199,9 @@ namespace JacHash
             // Copy the bytes from the source into our new byte[].
             for (int i = 0; i < bytes.Length; i++)
                 ret[i] = bytes[i];
-            // Add in 0xFFs until we reach the maximum length.
+            // Add in FILLER_BYTEs until we reach the maximum length.
             for (int i = bytes.Length; i < ret.Length; i++)
-                ret[i] = 0xFF;
+                ret[i] = FILLER_BYTE;
             
             return ret;
         }

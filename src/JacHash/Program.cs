@@ -8,14 +8,16 @@ namespace JacHash
     class MainClass
     {
         static JacHashConfiguration config;
+        static JacHash jacHash;
 
         public static void Main(string[] args)
         {
             config = new Arguments(args).Scan();
+            jacHash = new JacHash(config.Length);
             switch (config.JacHashMode)
             {
                 case JacHashMode.File:
-                    processOutput(new JacHash().Hash(new StreamReader(config.FilePath).BaseStream));
+                    processOutput(jacHash.ComputeHashString(new StreamReader(config.FilePath).BaseStream));
                     break;
                 case JacHashMode.Repl:
                     while (true)
@@ -29,21 +31,16 @@ namespace JacHash
         private static void processOutput(string output)
         {
             Console.WriteLine(output);
-            return;
-            if (config.OutputPath == "" || config.OutputPath == null)
-                Console.WriteLine(output);
-            else
-                File.AppendAllText(config.OutputPath, output);
         }
 
         private static string hash(string text)
         {
-            return new JacHash().Hash(text);
+            return jacHash.ComputeHashString(text);
         }
 
         private static string hash(byte[] data)
         {
-            return new JacHash().Hash(data);
+            return jacHash.ComputeHashString(data);
         }
     }
 }
