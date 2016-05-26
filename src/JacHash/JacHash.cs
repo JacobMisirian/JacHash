@@ -14,7 +14,7 @@ namespace JacHash
         /// <summary>
         /// The FILLER_BYTE to pad the input.
         /// </summary>
-        public const byte FILLER_BYTE = 0xFF;
+        public const byte FILLER_BYTE = 0xF;
         /// <summary>
         /// A.
         /// </summary>

@@ -3,6 +3,7 @@
 #include "jachash.h"
 
 #define MAX_LENGTH 16
+#define FILLER_BYTE 0xF
 
 static char transformByte(struct jachash_context *context, char bl);
 static char shiftLeft(char b, char bits);
@@ -11,9 +12,7 @@ static void init(struct jachash_context *context);
 
 char *computeHashFromString(struct jachash_context *context, const char* string) {
 	char bytes[strlen(string)];
-	int i;
-	for (i = 0; i < strlen(string); i++)
-		bytes[i] = (char)string[i];
+	strcpy(bytes, string);
 	computeHashFromBytes(context, bytes, strlen(string));
 }
 
@@ -46,14 +45,14 @@ char *computeHashFromFile(struct jachash_context *context, FILE *fp) {
 	for (i = 0; i < length; i++)
 		context->x += fgetc(fp);
 	for (i = appendToStream; i < MAX_LENGTH; i++)
-		context->x += 0xFF;
+		context->x += FILLER_BYTE;
 		rewind(fp);
 	for (i = 0; i < length; i++)
 		result[i % MAX_LENGTH] = transformByte(context, fgetc(fp));
 	for (; i < MAX_LENGTH; i++)
-		result[i % MAX_LENGTH] = transformByte(context, 0xFF);
+		result[i % MAX_LENGTH] = transformByte(context, FILLER_BYTE);
 	for (i = 0; i < MAX_LENGTH; i++)
-		printf("%02x", result[i] & 0xFF);
+		printf("%02x", result[i] & FILLER_BYTE);
 	printf("\n");
 }
 
@@ -75,8 +74,8 @@ static int pad(char *source, int size) {
 		return size;
 	int i;
 	for (i = size; i < MAX_LENGTH; i++)
-		source[i] = 0xFF;
-	//source[i] = 0;
+		source[i] = FILLER_BYTE;
+	source[i] = 0;
 	return MAX_LENGTH;
 }
 

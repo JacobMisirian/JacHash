@@ -10,7 +10,7 @@ int main (int argc, char *argv[]) {
 		return 0;
 	}
 	if (strcmp(argv[1], "-s") == 0)
-		computeHashFromString(&context, "helloworld");
+		computeHashFromString(&context, argv[2]);
 	else
 		computeHashFromFile(&context, fopen(argv[2], "r"));
 	return 0;
