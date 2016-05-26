@@ -5,7 +5,7 @@
 #define MAX_LENGTH 16
 #define FILLER_BYTE 0xF
 
-static char transformByte(struct jachash_context *context, char bl);
+static uint8_t transformByte(struct jachash_context *context, uint8_t bl);
 static char shiftLeft(char b, char bits);
 static int pad(char *source, int size);
 static void init(struct jachash_context *context);
@@ -36,17 +36,20 @@ char *computeHashFromFile(struct jachash_context *context, FILE *fp) {
 	fseek(fp, 0L, SEEK_END);
 	int length = ftell(fp);
 	rewind(fp);
-	int appendToStream = 0;
 
+	int appendToStream = 0;
 	if (length < MAX_LENGTH)
 		appendToStream = MAX_LENGTH - length;
-	char result[length + appendToStream];
+
+	uint8_t result[MAX_LENGTH];
 
 	for (i = 0; i < length; i++)
 		context->x += fgetc(fp);
-	for (i = appendToStream; i < MAX_LENGTH; i++)
+
+	for (i = 0; i < appendToStream; i++)
 		context->x += FILLER_BYTE;
-		rewind(fp);
+
+	rewind(fp);
 	for (i = 0; i < length; i++)
 		result[i % MAX_LENGTH] = transformByte(context, fgetc(fp));
 	for (; i < MAX_LENGTH; i++)
@@ -56,7 +59,7 @@ char *computeHashFromFile(struct jachash_context *context, FILE *fp) {
 	printf("\n");
 }
 
-static char transformByte(struct jachash_context *context, char bl) {
+static uint8_t transformByte(struct jachash_context *context, uint8_t bl) {
 	context->a = shiftLeft(bl, context->x);
 	context->b = (context->b ^ bl) - context->x;
 	context->c = (context->a + context->b) & context->x;

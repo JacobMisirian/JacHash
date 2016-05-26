@@ -3,9 +3,20 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="CJacHash/jachash.c">
     <Files>
       <File FileName="CJacHash/main.c" Line="1" Column="1" />
-      <File FileName="CJacHash/jachash.c" Line="25" Column="42" />
+      <File FileName="CJacHash/jachash.c" Line="54" Column="24" />
       <File FileName="CJacHash/jachash.h" Line="1" Column="1" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="CJacHash" expanded="True">
+            <Node name="CJacHash" expanded="True">
+              <Node name="jachash.c" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

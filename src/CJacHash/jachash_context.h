@@ -1,12 +1,14 @@
 ﻿#ifndef jachash_context_h
 #define jachash_context_h
 
+#include <stdint.h>
+
 struct jachash_context {
-	unsigned int a;
-	unsigned int b;
-	unsigned int c;
-	unsigned int d;
-	unsigned int x;
+	uint8_t a;
+	uint8_t b;
+	uint8_t c;
+	uint8_t d;
+	uint8_t x;
 };
 
 #endif
