@@ -3,6 +3,7 @@
 
 #include "jachash_context.h"
 
-char *computeHash(struct jachash_context *context, const char* string);
+char *computeHashFromString(struct jachash_context *context, const char* string);
+char *computeHashFromBytes(struct jachash_context *context, char *bytes, int sourceSize);
 
 #endif

@@ -5,7 +5,7 @@
 
 int main (int argc, char *argv[]) {
 	struct jachash_context context;
-	computeHash(&context, "apple\0");
+	computeHashFromString(&context, "appl\0");
 	return 0;
 }
 

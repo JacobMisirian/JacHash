@@ -4,37 +4,28 @@
 
 #define MAX_LENGTH 16
 
-static void pad(char *source, int size);
 static char transformByte(struct jachash_context *context, char bl);
 static char shiftLeft(char b, char bits);
+static int pad(char *source, int size);
+static void init(struct jachash_context *context);
 
-char *computeHash(struct jachash_context *context, const char* string) {
-	context->a = 0x6B87;
-	context->b = 0x7F43;
-	context->c = 0xA4Ad;
-	context->d = 0xDC3F;
-	context->x = 0;
-
-	int sourceSize;
-	if (strlen(string) >= MAX_LENGTH)
-		sourceSize = strlen(string);
-	else
-		sourceSize = MAX_LENGTH;
-
-	char source[sourceSize];
+char *computeHashFromString(struct jachash_context *context, const char* string) {
+	char bytes[strlen(string)];
 	int i;
-	for (i = 0; i < strlen(string); i++) {
-		source[i] = string[i];
-	}
+	for (i = 0; i < strlen(string); i++)
+		bytes[i] = (char)string[i];
+	computeHashFromBytes(context, bytes, strlen(string));
+}
 
-	pad(source, strlen(string));
-
+char *computeHashFromBytes(struct jachash_context *context, char *bytes, int length) {
+	init(context);
+	int i;
 	char result[MAX_LENGTH];
-
+	int sourceSize = pad(bytes, length);
 	for (i = 0; i < sourceSize; i++)
-		context->x += (char)source[i];
+		context->x += (char)bytes[i];
 	for (i = 0; i < sourceSize; i++)
-		result[i % MAX_LENGTH] = transformByte(context, source[i]);
+		result[i % MAX_LENGTH] = transformByte(context, bytes[i]);
 	for (i = 0; i < MAX_LENGTH; i++)
 		printf("%02x", result[i] & 0xFF);
 	printf("\n");
@@ -53,11 +44,20 @@ static char shiftLeft(char b, char bits) {
 	return ((b << bits | b >> 32 - bits));
 }
 
-static void pad(char *source, int size) {
+static int pad(char *source, int size) {
 	if (size >= MAX_LENGTH)
-		return;
+		return size;
 	int i;
 	for (i = size; i < MAX_LENGTH; i++)
 		source[i] = 0xFF;
 	//source[i] = 0;
+	return MAX_LENGTH;
+}
+
+static void init(struct jachash_context *context) {
+	context->a = 0x6B87;
+	context->b = 0x7F43;
+	context->c = 0xA4Ad;
+	context->d = 0xDC3F;
+	context->x = 0;
 }
