@@ -2,9 +2,9 @@
 #include <string.h>
 #include "jachash.h"
 
-#define MAX_LENGTH 17
+#define MAX_LENGTH 5
 
-static void pad(char source[]);
+static void pad(char *source, int size);
 static char transformByte(struct jachash_context *context, char bl);
 static char shiftLeft(char b, char bits);
 
@@ -15,26 +15,26 @@ char *computeHash(struct jachash_context *context, const char* string) {
 	context->d = 0xDC3F;
 	context->x = 0;
 
-	int size;
+	int sourceSize;
 	if (strlen(string) >= MAX_LENGTH)
-		size = strlen(string);
+		sourceSize = strlen(string);
 	else
-		size = MAX_LENGTH;
-	char source[size];
+		sourceSize = MAX_LENGTH;
+	char source[sourceSize];
 	int i;
 	for (i = 0; i < strlen(string); i++) {
 		source[i] = string[i];
 	}
 
-	pad(source);
+	pad(source, strlen(string));
 
 	char result[MAX_LENGTH];
 
-	for (i = 0; i < sizeof(source); i++)
+	for (i = 0; i < sourceSize; i++)
 		context->x += (char)source[i];
-	for (i = 0; i < sizeof(source); i++)
+	for (i = 0; i < sourceSize; i++)
 		result[i % MAX_LENGTH] = transformByte(context, source[i]);
-	for (i = 0; i < sizeof(MAX_LENGTH); i++)
+	for (i = 0; i < MAX_LENGTH; i++)
 		printf("%02X", result[i]);
 }
 
@@ -48,13 +48,13 @@ static char transformByte(struct jachash_context *context, char bl) {
 }
 
 static char shiftLeft(char b, char bits) {
-	return (unsigned int)((b << bits | b >> 32 - bits));
+	return ((b << bits | b >> 32 - bits));
 }
 
-static void pad(char source[]) {
-	if (sizeof(source) >= MAX_LENGTH)
+static void pad(char *source, int size) {
+	if (size >= MAX_LENGTH)
 		return;
 	int i;
-	for (i = sizeof(source); i < MAX_LENGTH; i++)
+	for (i = size; i < MAX_LENGTH; i++)
 		source[i] = 0xFF;
 }
