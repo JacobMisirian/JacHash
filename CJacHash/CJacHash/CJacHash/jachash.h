@@ -5,5 +5,6 @@
 
 char *computeHashFromString(struct jachash_context *context, const char* string);
 char *computeHashFromBytes(struct jachash_context *context, char *bytes, int sourceSize);
+char *computeHashFromFile(struct jachash_context *context, FILE *fp);
 
 #endif

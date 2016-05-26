@@ -31,6 +31,32 @@ char *computeHashFromBytes(struct jachash_context *context, char *bytes, int len
 	printf("\n");
 }
 
+char *computeHashFromFile(struct jachash_context *context, FILE *fp) {
+	init(context);
+	int i;
+	fseek(fp, 0L, SEEK_END);
+	int length = ftell(fp);
+	rewind(fp);
+	int appendToStream = 0;
+
+	if (length < MAX_LENGTH)
+		appendToStream = MAX_LENGTH - length;
+	char result[length + appendToStream];
+
+	for (i = 0; i < length; i++)
+		context->x += fgetc(fp);
+	for (i = appendToStream; i < MAX_LENGTH; i++)
+		context->x += 0xFF;
+		rewind(fp);
+	for (i = 0; i < length; i++)
+		result[i % MAX_LENGTH] = transformByte(context, fgetc(fp));
+	for (; i < MAX_LENGTH; i++)
+		result[i % MAX_LENGTH] = transformByte(context, 0xFF);
+	for (i = 0; i < MAX_LENGTH; i++)
+		printf("%02x", result[i] & 0xFF);
+	printf("\n");
+}
+
 static char transformByte(struct jachash_context *context, char bl) {
 	context->a = shiftLeft(bl, context->x);
 	context->b = (context->b ^ bl) - context->x;

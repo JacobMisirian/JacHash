@@ -5,7 +5,14 @@
 
 int main (int argc, char *argv[]) {
 	struct jachash_context context;
-	computeHashFromString(&context, "appl\0");
+	if (argc < 2) {
+		printf("Not enough arguments!");
+		return 0;
+	}
+	if (strcmp(argv[1], "-s") == 0)
+		computeHashFromString(&context, "helloworld");
+	else
+		computeHashFromFile(&context, fopen(argv[2], "r"));
 	return 0;
 }
 
