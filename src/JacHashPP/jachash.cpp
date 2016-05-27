@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include <stdio.h>
+#include <string.h>
 #include "jachash.h"
 
 #define MAX_LENGTH 16
@@ -11,7 +11,38 @@
 
 jachash::jachash() {}
 
-std::string jachash::computeHashFromBytes(uint8_t* bytesPt, int byteLength) {
+void jachash::computeHashFromFile(char* dest, FILE *fp) {
+    init();
+    int i;
+    fseek(fp, 0L, SEEK_END);
+    int length = ftell(fp);
+    rewind(fp);
+
+    int appendToStream = 0;
+    if (length < MAX_LENGTH)
+        appendToStream = MAX_LENGTH - length;
+
+    uint8_t result[MAX_LENGTH];
+
+    for (i = 0; i < length; i++)
+        x += fgetc(fp);
+
+    for (i = 0; i < appendToStream; i++)
+        x += FILLER_BYTE;
+
+    rewind(fp);
+    for (i = 0; i < length; i++)
+        result[i % MAX_LENGTH] = transformByte(fgetc(fp));
+    for (; i < MAX_LENGTH; i++)
+        result[i % MAX_LENGTH] = transformByte(FILLER_BYTE);
+    for (i = 0; i < MAX_LENGTH; i++) {
+        sprintf(dest, "%02x", result[i] & 0xFF);
+        dest += 2;
+    }
+    dest[MAX_LENGTH] = 0;
+}
+
+void jachash::computeHashFromBytes(char* dest, uint8_t* bytesPt, int byteLength) {
     init();
     uint8_t bytes[byteLength < MAX_LENGTH ? MAX_LENGTH : byteLength];
     for (int i = 0; i < byteLength; i++)
@@ -23,17 +54,19 @@ std::string jachash::computeHashFromBytes(uint8_t* bytesPt, int byteLength) {
     uint8_t result[MAX_LENGTH];
     for (int i = 0; i < byteSize; i++)
         result[i % MAX_LENGTH] = transformByte(bytes[i]);
-    for (int i = 0; i < MAX_LENGTH; i++)
-        printf("%02x", result[i] & 0xFF);
-    printf("\n");
+    for (int i = 0; i < MAX_LENGTH; i++) {
+        sprintf(dest, "%02x", result[i] & 0xFF);
+        dest += 2;
+    }
+    dest[MAX_LENGTH] = 0;
 }
 
-std::string jachash::computeHashFromString(std::string text) {
+void jachash::computeHashFromString(char* dest, std::string text) {
     int textSize = text.length();
     uint8_t bytes[textSize];
     for (int i = 0; i < textSize; i++)
         bytes[i] = text[i];
-    computeHashFromBytes(bytes, textSize);
+    computeHashFromBytes(dest, bytes, textSize);
 }
 
 uint8_t jachash::transformByte(uint8_t bl) {

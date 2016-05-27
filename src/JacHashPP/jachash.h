@@ -11,8 +11,9 @@
 class jachash {
 public:
     jachash();
-    std::string computeHashFromBytes(uint8_t* bytesPt, int byteLength);
-    std::string computeHashFromString(std::string text);
+    void computeHashFromBytes(char* dest, uint8_t* bytesPt, int byteLength);
+    void computeHashFromFile(char* dest, FILE *fp);
+    void computeHashFromString(char* dest, std::string text);
 private:
     int pad(uint8_t *bytes, int textSize);
     uint8_t transformByte(uint8_t bl);
