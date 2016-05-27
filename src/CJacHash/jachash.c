@@ -10,13 +10,13 @@ static char shiftLeft(char b, char bits);
 static int pad(char *source, int size);
 static void init(struct jachash_context *context);
 
-char *computeHashFromString(struct jachash_context *context, const char* string) {
+char *computeHashFromString(struct jachash_context *context, char *dest, const char* string) {
 	char bytes[strlen(string)];
 	strcpy(bytes, string);
-	computeHashFromBytes(context, bytes, strlen(string));
+	computeHashFromBytes(context, dest, bytes, strlen(string));
 }
 
-char *computeHashFromBytes(struct jachash_context *context, char *bytes, int length) {
+char *computeHashFromBytes(struct jachash_context *context, char *dest, char *bytes, int length) {
 	init(context);
 	int i;
 	char result[MAX_LENGTH];
@@ -25,12 +25,14 @@ char *computeHashFromBytes(struct jachash_context *context, char *bytes, int len
 		context->x += (char)bytes[i];
 	for (i = 0; i < sourceSize; i++)
 		result[i % MAX_LENGTH] = transformByte(context, bytes[i]);
-	for (i = 0; i < MAX_LENGTH; i++)
-		printf("%02x", result[i] & 0xFF);
-	printf("\n");
+	for (i = 0; i < MAX_LENGTH; i++) {
+		sprintf(dest, "%02x", result[i] & 0xFF);
+		dest += 2;
+	}
+	dest[MAX_LENGTH] = 0;
 }
 
-char *computeHashFromFile(struct jachash_context *context, FILE *fp) {
+char *computeHashFromFile(struct jachash_context *context, char *dest, FILE *fp) {
 	init(context);
 	int i;
 	fseek(fp, 0L, SEEK_END);
@@ -54,8 +56,10 @@ char *computeHashFromFile(struct jachash_context *context, FILE *fp) {
 		result[i % MAX_LENGTH] = transformByte(context, fgetc(fp));
 	for (; i < MAX_LENGTH; i++)
 		result[i % MAX_LENGTH] = transformByte(context, FILLER_BYTE);
-	for (i = 0; i < MAX_LENGTH; i++)
-		printf("%02x", result[i] & 0xFF);
+	for (i = 0; i < MAX_LENGTH; i++) {
+		sprintf(dest, "%02x", result[i] & 0xFF);
+		dest += 2;
+	}
 	printf("\n");
 }
 

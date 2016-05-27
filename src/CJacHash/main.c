@@ -9,10 +9,12 @@ int main (int argc, char *argv[]) {
 		printf("Not enough arguments!");
 		return 0;
 	}
+	char hash[25];
 	if (strcmp(argv[1], "-s") == 0)
-		computeHashFromString(&context, argv[2]);
+		computeHashFromString(&context, hash, argv[2]);
 	else
-		computeHashFromFile(&context, fopen(argv[2], "r"));
+		computeHashFromFile(&context, hash, fopen(argv[2], "r"));
+	printf("%s\n", hash);
 	return 0;
 }
 
