@@ -83,9 +83,9 @@ static int pad(char *source, int size) {
 }
 
 static void init(struct jachash_context *context) {
-	context->a = 0x6B87;
-	context->b = 0x7F43;
-	context->c = 0xA4Ad;
-	context->d = 0xDC3F;
+	context->a = 0x6B87 & 0xFF;
+	context->b = 0x7F43 & 0xFF;
+	context->c = 0xA4Ad & 0xFF;
+	context->d = 0xDC3F & 0xFF;
 	context->x = 0;
 }
