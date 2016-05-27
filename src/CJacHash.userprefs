@@ -1,8 +1,10 @@
 ﻿<Properties StartupItem="CJacHash/CJacHash.cproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="CJacHash/jachash.c">
+  <MonoDevelop.Ide.Workbench ActiveDocument="CJacHash/main.c">
     <Files>
-      <File FileName="CJacHash/jachash.c" Line="57" Column="24" />
+      <File FileName="CJacHash/jachash.c" Line="83" Column="16" />
+      <File FileName="CJacHash/jachash.h" Line="10" Column="7" />
+      <File FileName="CJacHash/main.c" Line="15" Column="6" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
