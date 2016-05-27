@@ -55,7 +55,7 @@ char *computeHashFromFile(struct jachash_context *context, FILE *fp) {
 	for (; i < MAX_LENGTH; i++)
 		result[i % MAX_LENGTH] = transformByte(context, FILLER_BYTE);
 	for (i = 0; i < MAX_LENGTH; i++)
-		printf("%02x", result[i] & FILLER_BYTE);
+		printf("%02x", result[i] & 0xFF);
 	printf("\n");
 }
 
