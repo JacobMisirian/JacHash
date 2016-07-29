@@ -1,46 +1,22 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace JacHash
 {
-    class MainClass
+    class Program
     {
-        static JacHashConfiguration config;
-        static JacHash jacHash;
-
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
-            config = new Arguments(args).Scan();
-            jacHash = new JacHash(config.Length);
-            switch (config.JacHashMode)
+            JacHash hash = new JacHash();
+            hash.TestBrute("0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz", 8);
+            while (true)
             {
-                case JacHashMode.File:
-                    processOutput(jacHash.ComputeHashString(new StreamReader(config.FilePath).BaseStream));
-                    break;
-                case JacHashMode.Repl:
-                    while (true)
-                    {
-                        processOutput("> ");
-                        processOutput(hash(Console.ReadLine()));
-                    }
+                Console.WriteLine(hash.Hash(ASCIIEncoding.ASCII.GetBytes(Console.ReadLine())));
             }
-        }
-
-        private static void processOutput(string output)
-        {
-            Console.WriteLine(output);
-        }
-
-        private static string hash(string text)
-        {
-            return jacHash.ComputeHashString(text);
-        }
-
-        private static string hash(byte[] data)
-        {
-            return jacHash.ComputeHashString(data);
         }
     }
 }

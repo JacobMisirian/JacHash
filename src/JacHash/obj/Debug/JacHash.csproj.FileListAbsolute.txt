@@ -1,0 +1,6 @@
+c:\users\reagan\JacHash\JacHash\bin\Debug\JacHash.exe.config
+c:\users\reagan\JacHash\JacHash\bin\Debug\JacHash.exe
+c:\users\reagan\JacHash\JacHash\bin\Debug\JacHash.pdb
+c:\users\reagan\JacHash\JacHash\obj\Debug\JacHash.csprojResolveAssemblyReference.cache
+c:\users\reagan\JacHash\JacHash\obj\Debug\JacHash.exe
+c:\users\reagan\JacHash\JacHash\obj\Debug\JacHash.pdb

@@ -1,246 +1,112 @@
-using System;
-using System.IO;
-using System.Security.Cryptography;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace JacHash
 {
-    public class JacHash : HashAlgorithm
+    public class JacHash
     {
-        /// <summary>
-        /// The MAX LENGTH.
-        /// </summary>
-        public int MAX_LENGTH = 17;
-        /// <summary>
-        /// The FILLER_BYTE to pad the input.
-        /// </summary>
-        public const byte FILLER_BYTE = 0xF;
-        /// <summary>
-        /// A.
-        /// </summary>
-        public const uint A = 0x6B87;
-        /// <summary>
-        /// The b.
-        /// </summary>
-        public const uint B = 0x7F43;
-        /// <summary>
-        /// The c.
-        /// </summary>
-        public const uint C = 0xA4Ad;
-        /// <summary>
-        /// The d.
-        /// </summary>
-        public const uint D = 0xDC3F;
-        /// <summary>
-        /// Gets a value indicating whether this instance hash.
-        /// </summary>
-        /// <value><c>true</c> if this instance hash; otherwise, <c>false</c>.</value>
-        public new string Hash { get { return getHexString(hash); } }
-        private byte[] hash;
-
-        // These are the registers that change after each byte.
+        public const int HASH_LENGTH = 16;
         private uint a;
         private uint b;
         private uint c;
         private uint d;
 
-        // This is a register that is dependent on all of the bytes. Responsible for avalanche effect.
-        private uint x = 0;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JacHash.JacHash"/> class.
-        /// </summary>
-        public JacHash() {}
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JacHash.JacHash"/> class.
-        /// </summary>
-        /// <param name="maxLength">Max length of result hash.</param>
-        public JacHash(int maxLength)
+        public string Hash(byte[] data)
         {
-            MAX_LENGTH = maxLength / 2;
-        }
-        /// <summary>
-        /// Computes the hash.
-        /// </summary>
-        /// <returns>The hash.</returns>
-        /// <param name="inputStream">Input stream.</param>
-        public new byte[] ComputeHash(Stream inputStream)
-        {
-            Initialize();
-            BinaryReader reader = new BinaryReader(inputStream);
-
-            // Find if the stream contains less than MAX_LENGTH, how many bytes need to be appended.
-            int appendToStream = 0;
-            if (reader.BaseStream.Length < MAX_LENGTH)
-                appendToStream = MAX_LENGTH - (int)reader.BaseStream.Length;
-
-            // Holds the result.
-            byte[] result = new byte[MAX_LENGTH];
-            // Read over the stream and set the initial value of x.
-            while (reader.BaseStream.Position < reader.BaseStream.Length)
-                x += reader.ReadBytes(1)[0];
-            // Also set the initial value with the amount of filler bytes.
-            for (int i = 0; i < appendToStream; i++)
-                x += FILLER_BYTE;
-            // Reset the stream.
-            reader.BaseStream.Position = 0;
-            // Iterate over the stream and set the result.
-            while (reader.BaseStream.Position < reader.BaseStream.Length)
-                result[reader.BaseStream.Position % MAX_LENGTH] = transformByte(reader.ReadBytes(1)[0]);
-            // Finish iterating over the filler bytes.
-            for (int i = (int)reader.BaseStream.Length; i < ((int)reader.BaseStream.Length) + appendToStream; i++)
-                result[i % MAX_LENGTH] = transformByte(FILLER_BYTE);
-            hash = result;
-            return result;
-        }
-        /// <summary>
-        /// Computes the hash.
-        /// </summary>
-        /// <returns>The hash.</returns>
-        /// <param name="buffer">Buffer.</param>
-        /// <param name="offset">Offset.</param>
-        /// <param name="count">Count.</param>
-        public new byte[] ComputeHash(byte[] buffer, int offset, int count)
-        {
-            Initialize();
-            byte[] source = new byte[count - offset];
-            for (int i = offset; i < count; i++)
-                source[i - offset] = buffer[i];
-            // If the source bytes are less than the minimum MAX_LENGTH, pad() will append FILLER_BYTE until it hits MAX_LENGTH.
-            source = pad(source);
-
-            // The resulting hash.
-            byte[] result = new byte[MAX_LENGTH];
-
-            // This creates the avalanche effect by setting the value of x in a manner where all the bytes get to participate.
-            foreach (byte b in source)
-                x += b;
-            // Loop through all the bytes and preform bitwise operations on them to randomize them.
-            // Use i % MAX_LENGTH so that it will not go outside the range of 0 .. MAX_LENGTH.
-            for (int i = 0; i < source.Length; i++)
-                result[i % MAX_LENGTH] = transformByte(source[i]);
-
-            hash = result;
-            return result;
-        }
-        /// <summary>
-        /// Computes the hash string.
-        /// </summary>
-        /// <returns>The hash string.</returns>
-        /// <param name="hash">Hash.</param>
-        public string ComputeHashString(string hash)
-        {
-            ComputeHash(ASCIIEncoding.ASCII.GetBytes(hash));
-            return Hash;
-        }
-        /// <summary>
-        /// Computes the hash string.
-        /// </summary>
-        /// <returns>The hash string.</returns>
-        /// <param name="inputStream">Input stream.</param>
-        public string ComputeHashString(Stream inputStream)
-        {
-            ComputeHash(inputStream);
-            return Hash;
-        }
-        /// <summary>
-        /// Computes the hash string.
-        /// </summary>
-        /// <returns>The hash string.</returns>
-        /// <param name="buffer">Buffer.</param>
-        public string ComputeHashString(byte[] buffer)
-        {
-            ComputeHash(buffer);
-            return Hash;
-        }
-        /// <summary>
-        /// Computes the hash string.
-        /// </summary>
-        /// <returns>The hash string.</returns>
-        /// <param name="buffer">Buffer.</param>
-        /// <param name="offset">Offset.</param>
-        /// <param name="count">Count.</param>
-        public string ComputeHashString(byte[] buffer, int offset, int count)
-        {
-            ComputeHash(buffer, offset, count);
-            return Hash;
-        }
-        /// <summary>
-        /// Determines whether this instance hash core the specified array ibStart cbSize.
-        /// </summary>
-        /// <returns><c>true</c> if this instance hash core the specified array ibStart cbSize; otherwise, <c>false</c>.</returns>
-        /// <param name="array">Array.</param>
-        /// <param name="ibStart">Ib start.</param>
-        /// <param name="cbSize">Cb size.</param>
-        protected override void HashCore(byte[] array, int ibStart, int cbSize)
-        {
-            ComputeHash(array, ibStart, cbSize);
-        }
-        /// <summary>
-        /// Determines whether this instance hash final.
-        /// </summary>
-        /// <returns><c>true</c> if this instance hash final; otherwise, <c>false</c>.</returns>
-        protected override byte[] HashFinal()
-        {
-            return hash;
-        }
-        /// <Docs>A newly created instance doesn't have to be initialized.</Docs>
-        /// <attribution license="cc4" from="Microsoft" modified="false"></attribution>
-        /// <see cref="T:System.Security.Cryptography.HashAlgorithm"></see>
-        /// <summary>
-        /// Initialize this instance.
-        /// </summary>
-        public override void Initialize()
-        {
-            a = A;
-            b = B;
-            c = C;
-            d = D;
-            x = 0;
+            data = pad(data);
+            init(data);
+            byte[] result = new byte[HASH_LENGTH];
+            for (int i = 0; i < data.Length; i++)
+                result[i % HASH_LENGTH] += prng(data[i]);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < result.Length; i++)
+                sb.AppendFormat("{0:x2}", result[i]);
+            return sb.ToString();
         }
 
-        private byte transformByte(byte bl)
+        public void TestBrute(string letters, int maxLength)
         {
-            // This is the math that is preformed on the byte. Notice every calculation is dependant upon 'x'
-            // which is dependant upon every byte in the source.
-            a = shiftLeft((uint)bl, x);
-            b = (b ^ bl) - x;
-            c = (a + b) & x;
-            d ^= x - b;
-            x ^= d;
-            bl = (byte)((a * c) + b - x * d ^ bl);
+            Dictionary<string, string> hashes = new Dictionary<string, string>();
+            char firstLetter = letters.First();
+            char lastLetter = letters.Last();
 
-            return bl;
+            for (int length = 1; length < maxLength; ++length)
+            {
+                StringBuilder accum = new StringBuilder(new String(firstLetter, length));
+                while (true)
+                {
+                    if (accum.ToString().All(val => val == lastLetter))
+                        break;
+                    for (int i = length - 1; i >= 0; --i)
+                        if (accum[i] != lastLetter)
+                        {
+                            accum[i] = letters[letters.IndexOf(accum[i]) + 1];
+                            break;
+                        }
+                        else
+                            accum[i] = firstLetter;
+                    string hash = Hash(System.Text.ASCIIEncoding.ASCII.GetBytes(accum.ToString()));
+                    if (hashes.ContainsKey(hash))
+                        Console.WriteLine("MATCH: {0}\t{1}", accum.ToString(), hashes[hash]);
+                    else
+                        hashes.Add(hash, accum.ToString());
+                }
+            }
         }
 
-        private byte[] pad(byte[] bytes)
+        public void TestPrng(byte[] data)
         {
-            // If we already meet the minimum length requirements, simply return.
-            if (bytes.Length >= MAX_LENGTH)
-                return bytes;
-            
-            byte[] ret = new byte[MAX_LENGTH];
-            // Copy the bytes from the source into our new byte[].
-            for (int i = 0; i < bytes.Length; i++)
-                ret[i] = bytes[i];
-            // Add in FILLER_BYTEs until we reach the maximum length.
-            for (int i = bytes.Length; i < ret.Length; i++)
-                ret[i] = FILLER_BYTE;
-            
+            int[] ints = new int[256];
+            init(data);
+            foreach(byte b in data)
+            {
+                ints[prng(b)]++;
+            }
+            for (int i = 0; i < ints.Length; i++)
+                Console.WriteLine("{0}\t{1}", i, ints[i]);
+            for (int i = 0; i < ints.Length; i++)
+                if (ints[i] == 0)
+                    Console.WriteLine(i);
+        }
+
+        private void init(byte[] data)
+        {
+            a = 0xBA;
+            b = 0xBE;
+            c = 0xCC;
+            d = (byte)data.Length;
+
+            foreach (byte by in data)
+            {
+                a += by;
+                b -= by;
+            }
+        }
+
+        private byte[] pad(byte[] data)
+        {
+            if (data.Length >= HASH_LENGTH)
+                return data;
+            byte[] ret = new byte[HASH_LENGTH];
+            int i;
+            for (i = 0; i < data.Length; i++)
+                ret[i] = data[i];
+            for (; i < HASH_LENGTH; i++)
+                ret[i] = (byte)i;
             return ret;
         }
 
-        private uint shiftLeft(uint b, uint bits)
+        private byte prng(byte s)
         {
-            return (uint)(((byte)b << (byte)bits) | ((byte)b >> 32 - (byte)bits));
-        }
-
-        private string getHexString(byte[] bytes)
-        {
-            StringBuilder accum = new StringBuilder();
-            for(int i = 0; i < bytes.Length; i++)
-                accum.AppendFormat("{0:x2}", bytes[i]);
-            return accum.ToString();
+            a ^= (byte)(d ^ s | b);
+            b ^= (byte)(d | s ^ a);
+            c ^= (byte)(s & b ^ a);
+            d ^= (byte)(a | s ^ b);
+            //Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", (byte)a, (byte)b, (byte)c, (byte)d, (byte)(s * b + c - d * a));
+            return (byte)(s + b ^ c ^ d ^ a);
         }
     }
 }
