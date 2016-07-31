@@ -1,0 +1,7 @@
+/home/reagan/JacHash/src/JacHash/obj/Debug/.NETFramework,Version=v4.5.2.AssemblyAttribute.cs
+/home/reagan/JacHash/src/JacHash/obj/Debug/JacHash.exe
+/home/reagan/JacHash/src/JacHash/obj/Debug/.NETFramework,Version=v4.0.AssemblyAttribute.cs
+/home/reagan/JacHash/src/JacHash/bin/Debug/JacHash.exe.config
+/home/reagan/JacHash/src/JacHash/bin/Debug/JacHash.exe.mdb
+/home/reagan/JacHash/src/JacHash/bin/Debug/JacHash.exe
+/home/reagan/JacHash/src/JacHash/obj/Debug/JacHash.exe.mdb

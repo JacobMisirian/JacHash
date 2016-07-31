@@ -6,27 +6,46 @@ using System.Threading.Tasks;
 
 namespace JacHash
 {
+    /// <summary>
+    /// JacHash.
+    /// </summary>
     public class JacHash
     {
-        public const int HASH_LENGTH = 16;
+        public int HashLength { get; private set; }
         private uint a;
         private uint b;
         private uint c;
         private uint d;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JacHash.JacHash"/> class.
+        /// </summary>
+        /// <param name="hashLength">Hash length.</param>
+        public JacHash(int hashLength = 16)
+        {
+            HashLength = hashLength;
+        }
+        /// <summary>
+        /// Determines whether this instance hash  data.
+        /// </summary>
+        /// <returns><c>true</c> if this instance hash data; otherwise, <c>false</c>.</returns>
+        /// <param name="data">Data.</param>
         public string Hash(byte[] data)
         {
             data = pad(data);
             init(data);
-            byte[] result = new byte[HASH_LENGTH];
+            byte[] result = new byte[HashLength];
             for (int i = 0; i < data.Length; i++)
-                result[i % HASH_LENGTH] += prng(data[i]);
+                result[i % HashLength] += prng(data[i]);
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < result.Length; i++)
                 sb.AppendFormat("{0:x2}", result[i]);
             return sb.ToString();
         }
-
+        /// <summary>
+        /// Tests the brute.
+        /// </summary>
+        /// <param name="letters">Letters.</param>
+        /// <param name="maxLength">Max length.</param>
         public void TestBrute(string letters, int maxLength)
         {
             Dictionary<string, string> hashes = new Dictionary<string, string>();
@@ -56,7 +75,10 @@ namespace JacHash
                 }
             }
         }
-
+        /// <summary>
+        /// Tests the prng.
+        /// </summary>
+        /// <param name="data">Data.</param>
         public void TestPrng(byte[] data)
         {
             int[] ints = new int[256];
@@ -88,13 +110,13 @@ namespace JacHash
 
         private byte[] pad(byte[] data)
         {
-            if (data.Length >= HASH_LENGTH)
+            if (data.Length >= HashLength)
                 return data;
-            byte[] ret = new byte[HASH_LENGTH];
+            byte[] ret = new byte[HashLength];
             int i;
             for (i = 0; i < data.Length; i++)
                 ret[i] = data[i];
-            for (; i < HASH_LENGTH; i++)
+            for (; i < HashLength; i++)
                 ret[i] = (byte)i;
             return ret;
         }
