@@ -103,8 +103,8 @@ namespace JacHash
 
             foreach (byte by in data)
             {
-                a += by;
-                b -= by;
+                a ^= by;
+           //     b -= by;
             }
         }
 
@@ -124,9 +124,9 @@ namespace JacHash
         private byte prng(byte s)
         {
             a ^= (byte)(d ^ s | b);
-            b ^= (byte)(d | s ^ a);
-            c ^= (byte)(s & b ^ a);
-            d ^= (byte)(a | s ^ b);
+            b ^= (byte)(d | s ^ a) + a;
+            c ^= (byte)(s & b ^ a) + a;
+            d ^= (byte)(a | s ^ b) + a;
             //Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", (byte)a, (byte)b, (byte)c, (byte)d, (byte)(s * b + c - d * a));
             return (byte)(s + b ^ c ^ d ^ a);
         }
