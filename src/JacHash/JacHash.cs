@@ -97,15 +97,20 @@ namespace JacHash
         private void init(byte[] data)
         {
             a = 0xBA;
-            b = 0xBE;
-            c = 0xCC;
+            b = 0xDE;
+            c = 0xFC;
             d = (byte)data.Length;
 
             foreach (byte by in data)
             {
-                a ^= by;
-           //     b -= by;
+                a = (a + prng(by)) % 255;
+                b = (b + prng((byte)a)) % 255;
             }
+            a = (byte)a;
+            b = (byte)b;
+            c = (byte)c;
+            d = (byte)d;
+            Console.WriteLine("a {0}\nb {1}\nc {2}\nd {3}", a, b, c, d);
         }
 
         private byte[] pad(byte[] data)
@@ -117,18 +122,18 @@ namespace JacHash
             for (i = 0; i < data.Length; i++)
                 ret[i] = data[i];
             for (; i < HashLength; i++)
-                ret[i] = (byte)i;
+                ret[i] = prng((byte)i);
             return ret;
         }
 
         private byte prng(byte s)
         {
-            a ^= (byte)(d ^ s | b);
-            b ^= (byte)(d | s ^ a) + a;
-            c ^= (byte)(s & b ^ a) + a;
-            d ^= (byte)(a | s ^ b) + a;
-            //Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", (byte)a, (byte)b, (byte)c, (byte)d, (byte)(s * b + c - d * a));
-            return (byte)(s + b ^ c ^ d ^ a);
+            a ^= (byte)(b | s ^ d);
+            b ^= (byte)(c & s ^ a) + a;
+            c ^= (byte)(d & s ^ c) + a;
+            d ^= (byte)(a | s ^ a) + a;
+          //  Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", (byte)a, (byte)b, (byte)c, (byte)d, (byte)((s + b ^ c ^ d ^ a) + a));
+            return (byte)((s + b ^ c ^ d ^ a) + a);
         }
     }
 }
