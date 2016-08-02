@@ -11,7 +11,12 @@ namespace JacHash
     /// </summary>
     public class JacHash
     {
+        /// <summary>
+        /// Gets a value indicating whether this instance hash length.
+        /// </summary>
+        /// <value><c>true</c> if this instance hash length; otherwise, <c>false</c>.</value>
         public int HashLength { get; private set; }
+
         private uint a;
         private uint b;
         private uint c;
@@ -34,8 +39,10 @@ namespace JacHash
             data = pad(data);
             init(data);
             byte[] result = new byte[HashLength];
+            // Iterate over the data and fill the result buffer with incremental random numbers.
             for (int i = 0; i < data.Length; i++)
                 result[i % HashLength] += prng(data[i]);
+            // Turn the byte values into hex representation.
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < result.Length; i++)
                 sb.AppendFormat("{0:x2}", result[i]);
@@ -84,9 +91,7 @@ namespace JacHash
             int[] ints = new int[256];
             init(data);
             foreach(byte b in data)
-            {
                 ints[prng(b)]++;
-            }
             for (int i = 0; i < ints.Length; i++)
                 Console.WriteLine("{0}\t{1}", i, ints[i]);
             for (int i = 0; i < ints.Length; i++)
@@ -96,31 +101,32 @@ namespace JacHash
 
         private void init(byte[] data)
         {
+            // Sets the initial values for the prng to three constants and the length of the data.
             a = 0xBA;
             b = 0xDE;
             c = 0xFC;
             d = (byte)data.Length;
 
+            // Sets te initial values for a and b so that they will exhibit the avalanche effect.
             foreach (byte by in data)
             {
                 a = (a + prng(by)) % 255;
                 b = (b + prng((byte)a)) % 255;
             }
-            a = (byte)a;
-            b = (byte)b;
-            c = (byte)c;
-            d = (byte)d;
-            Console.WriteLine("a {0}\nb {1}\nc {2}\nd {3}", a, b, c, d);
+            // Console.WriteLine("a {0}\nb {1}\nc {2}\nd {3}", a, b, c, d);
         }
 
         private byte[] pad(byte[] data)
         {
+            // If the data is already long enough there is no padding needed.
             if (data.Length >= HashLength)
                 return data;
             byte[] ret = new byte[HashLength];
             int i;
+            // Copy the data into the new buffer.
             for (i = 0; i < data.Length; i++)
                 ret[i] = data[i];
+            // Add in more random data to fill the buffer.
             for (; i < HashLength; i++)
                 ret[i] = prng((byte)i);
             return ret;
@@ -128,11 +134,12 @@ namespace JacHash
 
         private byte prng(byte s)
         {
+            // Scramble the prng numbers.
             a ^= (byte)(b | s ^ d);
             b ^= (byte)(c & s ^ a) + a;
             c ^= (byte)(d & s ^ c) + a;
             d ^= (byte)(a | s ^ a) + a;
-          //  Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", (byte)a, (byte)b, (byte)c, (byte)d, (byte)((s + b ^ c ^ d ^ a) + a));
+            // Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", (byte)a, (byte)b, (byte)c, (byte)d, (byte)((s + b ^ c ^ d ^ a) + a));
             return (byte)((s + b ^ c ^ d ^ a) + a);
         }
     }
